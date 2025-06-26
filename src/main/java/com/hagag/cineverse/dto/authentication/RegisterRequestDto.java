@@ -1,5 +1,6 @@
 package com.hagag.cineverse.dto.authentication;
 
+import com.hagag.cineverse.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,4 +33,5 @@ public class RegisterRequestDto {
     @Size(min=8, message = "Password must be at least 8 characters long")
     private String password;
 
+    private Role role;
 }
