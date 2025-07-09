@@ -19,6 +19,10 @@ public class Movie {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull
+    @Column(name = "tmdb_id", nullable = false)
+    private Long tmdbId;
+
     @Size(max = 255)
     @NotNull
     @Column(name = "title", nullable = false)

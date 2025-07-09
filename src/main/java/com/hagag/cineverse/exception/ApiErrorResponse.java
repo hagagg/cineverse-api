@@ -17,6 +17,6 @@ public class ApiErrorResponse {
     private String message;
     private int statusCode;
     private LocalDateTime timestamp;
-    private Object details;
+    private String details;
 
 }

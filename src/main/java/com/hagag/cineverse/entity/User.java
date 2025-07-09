@@ -26,12 +26,12 @@ public class User {
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "username", nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     private String userName;
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "email", nullable = false,unique = true, length = 100)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @Size(max = 50)
@@ -51,16 +51,18 @@ public class User {
     @Column(name = "role" , nullable = false)
     private Role role;
 
+    @NotNull
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @NotNull
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public String getFullName() {
-        return firstName + " " + lastName;
+        return firstName + " " + lastName ;
     }
 
 }
