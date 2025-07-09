@@ -1,6 +1,7 @@
 package com.hagag.cineverse.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -36,7 +37,7 @@ public class Comment {
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
-    @NotNull
+    @NotBlank
     @Lob
     @Column(name = "content", nullable = false)
     private String content;

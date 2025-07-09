@@ -2,6 +2,7 @@ package com.hagag.cineverse.entity;
 
 import com.hagag.cineverse.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -25,25 +26,27 @@ public class User {
     private Long id;
 
     @Size(max = 50)
-    @NotNull
+    @NotBlank
     @Column(name = "username", nullable = false, length = 50)
     private String userName;
 
     @Size(max = 100)
-    @NotNull
+    @NotBlank
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @Size(max = 50)
+    @NotBlank
     @Column(name = "first_name" , nullable = false)
     private String firstName;
 
     @Size(max = 50)
+    @NotBlank
     @Column(name = "last_name" , nullable = false)
     private String lastName;
 
     @Size(max = 255)
-    @NotNull
+    @NotBlank
     @Column(name = "password", nullable = false)
     private String password;
 

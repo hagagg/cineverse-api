@@ -1,6 +1,7 @@
 package com.hagag.cineverse.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Movie {
     private Long tmdbId;
 
     @Size(max = 255)
-    @NotNull
+    @NotBlank
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -32,11 +33,13 @@ public class Movie {
     @Column(name = "poster_url", length = 500)
     private String posterUrl;
 
-    @Column(name = "release_date")
+    @NotNull
+    @Column(name = "release_date" , nullable = false)
     private LocalDate releaseDate;
 
     @Lob
-    @Column(name = "overview")
+    @NotBlank
+    @Column(name = "overview" , nullable = false)
     private String overview;
 
 }
