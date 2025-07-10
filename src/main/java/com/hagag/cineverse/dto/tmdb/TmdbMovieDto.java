@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TmdbMovieDto {
 
+    private Long tmdbId;
+
     private String title;
 
     @JsonProperty("overview")

@@ -18,11 +18,11 @@ public interface MovieMapper {
     Movie toEntity(MovieRequestDto movieRequestDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "tmdbId", source = "tmdbId")
+    @Mapping(target = "tmdbId", source = "tmdbMovieDto.tmdbId")
     @Mapping(target = "title", source = "tmdbMovieDto.title")
     @Mapping(target = "overview", source = "tmdbMovieDto.description")
     @Mapping(target = "releaseDate", source = "tmdbMovieDto.releaseDate", qualifiedByName = "parseDate")
     @Mapping(target = "posterUrl", source = "tmdbMovieDto.posterPath", qualifiedByName = "buildPosterUrl")
-    Movie toEntity(TmdbMovieDto tmdbMovieDto , Long tmdbId);
+    Movie toEntity(TmdbMovieDto tmdbMovieDto);
 
 }

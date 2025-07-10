@@ -1,5 +1,6 @@
 package com.hagag.cineverse.exception;
 
+import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
 import com.hagag.cineverse.exception.custom.TmdbException;
 import com.hagag.cineverse.exception.custom.UserAlreadyExistsException;
 import com.hagag.cineverse.exception.custom.UserNotFoundException;
@@ -61,5 +62,15 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ApiErrorResponse handleResourceNotFound (ResourceNotFoundException ex){
+        return ApiErrorResponse.builder()
+                .success(false)
+                .message("Resource Not Found")
+                .details(ex.getMessage())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
 }
