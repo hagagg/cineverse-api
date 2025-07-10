@@ -1,5 +1,6 @@
 package com.hagag.cineverse.exception;
 
+import com.hagag.cineverse.exception.custom.TmdbException;
 import com.hagag.cineverse.exception.custom.UserAlreadyExistsException;
 import com.hagag.cineverse.exception.custom.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,17 @@ public class GlobalExceptionHandler {
                 .message("Validation Failed")
                 .details(errorMessage)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler(TmdbException.class)
+    public ApiErrorResponse handleTmdbException (TmdbException ex){
+        return ApiErrorResponse.builder()
+                .success(false)
+                .message("TMDb API Error")
+                .details(ex.getMessage())
+                .statusCode(HttpStatus.BAD_GATEWAY.value())
                 .timestamp(LocalDateTime.now())
                 .build();
     }

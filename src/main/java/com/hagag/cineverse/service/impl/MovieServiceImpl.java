@@ -23,17 +23,15 @@ public class MovieServiceImpl implements MovieService {
     public MovieResponseDto createMovie(MovieRequestDto movieRequestDto) {
         Long tmdbMovieId = movieRequestDto.getTmdbId();
 
-
         if (movieRepo.existsByTmdbId(tmdbMovieId)) {
             throw new IllegalArgumentException("Movie already exists");
         }
 
         TmdbMovieDto tmdbMovieDto = tmdbClient.fetchMovieById(tmdbMovieId);
-        System.out.println("TMDb DTO fetched: " + tmdbMovieDto);
-
 
         Movie movie = movieMapper.toEntity(tmdbMovieDto , tmdbMovieId);
         movieRepo.save(movie);
+
         return movieMapper.toDto(movie);
     }
 }
