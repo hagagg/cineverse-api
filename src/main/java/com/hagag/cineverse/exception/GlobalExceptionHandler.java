@@ -1,9 +1,6 @@
 package com.hagag.cineverse.exception;
 
-import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
-import com.hagag.cineverse.exception.custom.TmdbException;
-import com.hagag.cineverse.exception.custom.UserAlreadyExistsException;
-import com.hagag.cineverse.exception.custom.UserNotFoundException;
+import com.hagag.cineverse.exception.custom.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,4 +70,14 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ApiErrorResponse handleUnauthorized (UnauthorizedActionException ex) {
+        return ApiErrorResponse.builder()
+                .success(false)
+                .message("Unauthorized Action")
+                .details(ex.getMessage())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }
