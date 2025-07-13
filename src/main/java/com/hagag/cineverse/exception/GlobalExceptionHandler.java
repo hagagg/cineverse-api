@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -77,6 +78,17 @@ public class GlobalExceptionHandler {
                 .message("Unauthorized Action")
                 .details(ex.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ApiErrorResponse handleAlreadyExists (AlreadyExistsException ex){
+        return ApiErrorResponse.builder()
+                .success(false)
+                .message("Already Exists")
+                .details(ex.getMessage())
+                .statusCode(HttpStatus.CONFLICT.value())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
