@@ -8,6 +8,7 @@ import com.hagag.cineverse.entity.User;
 import com.hagag.cineverse.entity.Watchlist;
 import com.hagag.cineverse.exception.custom.AlreadyExistsException;
 import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
+import com.hagag.cineverse.mapper.PaginationMapper;
 import com.hagag.cineverse.mapper.WatchlistMapper;
 import com.hagag.cineverse.repository.MovieRepo;
 import com.hagag.cineverse.repository.WatchListRepo;
@@ -18,9 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +27,7 @@ public class WatchlistServiceImpl implements WatchlistService {
     private final WatchListRepo watchListRepo;
     private final MovieRepo movieRepo;
     private final WatchlistMapper watchlistMapper;
+    private final PaginationMapper paginationMapper;
     private final SecurityUtil securityUtil;
 
     @Override
@@ -58,16 +57,9 @@ public class WatchlistServiceImpl implements WatchlistService {
 
         Page<Watchlist> watchlistPage = watchListRepo.findAllByUserOrderByAddedAtDesc (user , pageable);
 
-        List<WatchlistResponseDto> dtoList = watchlistPage.stream().map(watchlistMapper::toDto).collect(Collectors.toList());
+        Page<WatchlistResponseDto> dtoPage = watchlistPage.map(watchlistMapper::toDto);
 
-        return PaginatedResponseDto.<WatchlistResponseDto>builder()
-                .items(dtoList)
-                .currentPage(watchlistPage.getNumber())
-                .totalPages(watchlistPage.getTotalPages())
-                .totalItems(watchlistPage.getTotalElements())
-                .pageSize(watchlistPage.getSize())
-                .isLastPage(watchlistPage.isLast())
-                .build();
+        return paginationMapper.toPaginatedResponse(dtoPage);
     }
 
     @Override
@@ -106,14 +98,7 @@ public class WatchlistServiceImpl implements WatchlistService {
 
         Page<TopWatchlistedMoviesDto> page = watchListRepo.findTopWatchlistedMovies(pageable);
 
-        return PaginatedResponseDto.<TopWatchlistedMoviesDto>builder()
-                .items(page.getContent())
-                .currentPage(page.getNumber())
-                .totalPages(page.getTotalPages())
-                .totalItems(page.getTotalElements())
-                .pageSize(page.getSize())
-                .isLastPage(page.isLast())
-                .build();
+        return paginationMapper.toPaginatedResponse(page);
     }
 
 

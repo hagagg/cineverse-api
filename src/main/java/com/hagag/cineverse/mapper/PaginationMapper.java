@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaginationMapper {
 
-    public <T>PaginatedResponseDto<T> toDto (Page<T> page) {
+    public <T>PaginatedResponseDto<T> toPaginatedResponse (Page<T> page) {
         return PaginatedResponseDto.<T>builder()
                 .items(page.getContent())
-                .currentPage(page.getNumber())
+                .currentPage(page.getNumber() + 1)
                 .totalPages(page.getTotalPages())
                 .totalItems(page.getTotalElements())
                 .pageSize(page.getSize())

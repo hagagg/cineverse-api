@@ -9,6 +9,7 @@ import com.hagag.cineverse.entity.User;
 import com.hagag.cineverse.exception.custom.AlreadyExistsException;
 import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
 import com.hagag.cineverse.mapper.LikeMapper;
+import com.hagag.cineverse.mapper.PaginationMapper;
 import com.hagag.cineverse.repository.LikeRepo;
 import com.hagag.cineverse.repository.MovieRepo;
 import com.hagag.cineverse.repository.UserRepo;
@@ -29,6 +30,7 @@ public class LikeServiceImpl implements LikeService {
     private final MovieRepo movieRepo;
     private final UserRepo userRepo;
     private final LikeMapper likeMapper;
+    private final PaginationMapper paginationMapper;
     private final SecurityUtil securityUtil;
     private final AccessGuard accessGuard;
 
@@ -65,15 +67,9 @@ public class LikeServiceImpl implements LikeService {
         User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with id: " + userId + " not found"));
 
         Page<Like> page = likeRepo.findAllByUser(user , pageable);
+        Page<LikeResponseDto> dtoPage = page.map(likeMapper::toDto);
 
-        return PaginatedResponseDto.<LikeResponseDto>builder()
-                .items(page.map(likeMapper::toDto).getContent())
-                .currentPage(page.getNumber())
-                .totalPages(page.getTotalPages())
-                .totalItems(page.getTotalElements())
-                .pageSize(page.getSize())
-                .isLastPage(page.isLast())
-                .build();
+        return paginationMapper.toPaginatedResponse(dtoPage);
     }
 
     @Override
@@ -81,15 +77,9 @@ public class LikeServiceImpl implements LikeService {
         User user = securityUtil.getCurrentUser();
 
         Page<Like> page = likeRepo.findAllByUser(user , pageable);
+        Page<LikeResponseDto> dtoPage = page.map(likeMapper::toDto);
 
-        return PaginatedResponseDto.<LikeResponseDto>builder()
-                .items(page.map(likeMapper::toDto).getContent())
-                .currentPage(page.getNumber())
-                .totalPages(page.getTotalPages())
-                .totalItems(page.getTotalElements())
-                .pageSize(page.getSize())
-                .isLastPage(page.isLast())
-                .build();
+        return paginationMapper.toPaginatedResponse(dtoPage);
     }
 
     @Override
@@ -104,14 +94,7 @@ public class LikeServiceImpl implements LikeService {
 
         Page<TopLikedMoviesDto> page = likeRepo.findTopLikedMovies(pageable);
 
-        return PaginatedResponseDto.<TopLikedMoviesDto>builder()
-                .items(page.getContent())
-                .currentPage(page.getNumber())
-                .totalPages(page.getTotalPages())
-                .totalItems(page.getTotalElements())
-                .pageSize(page.getSize())
-                .isLastPage(page.isLast())
-                .build();
+        return paginationMapper.toPaginatedResponse(page);
     }
 
 }

@@ -3,17 +3,19 @@ package com.hagag.cineverse.service.impl;
 import com.hagag.cineverse.client.TmdbClient;
 import com.hagag.cineverse.dto.movie.MovieResponseDto;
 import com.hagag.cineverse.dto.movie.MovieUpdateDto;
+import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.dto.tmdb.TmdbMovieDto;
 import com.hagag.cineverse.entity.Movie;
 import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
 import com.hagag.cineverse.mapper.MovieMapper;
+import com.hagag.cineverse.mapper.PaginationMapper;
 import com.hagag.cineverse.repository.MovieRepo;
 import com.hagag.cineverse.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class MovieServiceImpl implements MovieService {
 
     private final MovieRepo movieRepo;
     private final MovieMapper movieMapper;
+    private final PaginationMapper paginationMapper;
     private final TmdbClient tmdbClient;
 
     @Override
@@ -39,10 +42,12 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieResponseDto> getAllMovies() {
-        List <Movie> allMovies = movieRepo.findAll();
-        return allMovies.stream().map(movieMapper::toDto).collect(Collectors.toList());
+    public PaginatedResponseDto<MovieResponseDto> getAllMovies(Pageable pageable) {
+        Page<Movie> moviesPage = movieRepo.findAll(pageable);
 
+        Page<MovieResponseDto> dtoPage = moviesPage.map(movieMapper::toDto);
+
+        return paginationMapper.toPaginatedResponse(dtoPage);
     }
 
     @Override
@@ -52,9 +57,12 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieResponseDto> searchByTitle(String title) {
-        List<Movie> movies = movieRepo.findByTitleIgnoringSpacesAndCase(title);
-        return movies.stream().map(movieMapper::toDto).collect(Collectors.toList());
+    public PaginatedResponseDto<MovieResponseDto> searchByTitle(String title , Pageable pageable) {
+        Page<Movie> moviesPage = movieRepo.findByTitleIgnoringSpacesAndCase(title , pageable);
+
+        Page<MovieResponseDto> dtoPage = moviesPage.map(movieMapper::toDto);
+
+        return paginationMapper.toPaginatedResponse(dtoPage);
     }
 
     @Override

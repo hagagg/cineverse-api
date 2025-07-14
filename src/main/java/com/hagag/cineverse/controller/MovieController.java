@@ -2,12 +2,13 @@ package com.hagag.cineverse.controller;
 
 import com.hagag.cineverse.dto.movie.MovieResponseDto;
 import com.hagag.cineverse.dto.movie.MovieUpdateDto;
+import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class MovieController {
     }
 
     @GetMapping("/allMovies")
-    public List<MovieResponseDto> getAllMovies() {
-        return movieService.getAllMovies ();
+    public PaginatedResponseDto<MovieResponseDto> getAllMovies(Pageable pageable) {
+        return movieService.getAllMovies (pageable);
     }
 
     @GetMapping("/{id}")
@@ -32,8 +33,8 @@ public class MovieController {
     }
 
     @GetMapping("/title/{title}")
-    public List<MovieResponseDto> searchByTitle(@PathVariable String title) {
-        return movieService.searchByTitle(title);
+    public PaginatedResponseDto<MovieResponseDto> searchByTitle(@PathVariable String title , Pageable pageable) {
+        return movieService.searchByTitle(title , pageable);
     }
 
     @PutMapping("/update/{id}")

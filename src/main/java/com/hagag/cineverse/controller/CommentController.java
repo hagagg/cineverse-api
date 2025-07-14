@@ -3,12 +3,13 @@ package com.hagag.cineverse.controller;
 import com.hagag.cineverse.dto.comment.CommentRequestDto;
 import com.hagag.cineverse.dto.comment.CommentResponseDto;
 import com.hagag.cineverse.dto.comment.CommentUpdateDto;
+import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +24,8 @@ public class CommentController {
     }
 
     @GetMapping("/movie/{movieId}")
-    public List<CommentResponseDto> getCommentsByMovieId (@PathVariable Long movieId) {
-        return commentService.getCommentsByMovieId (movieId);
+    public PaginatedResponseDto<CommentResponseDto> getCommentsByMovieId (@PathVariable Long movieId , Pageable pageable) {
+        return commentService.getCommentsByMovieId (movieId , pageable);
     }
 
     @PutMapping("/update/{commentId}")
@@ -38,7 +39,7 @@ public class CommentController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<CommentResponseDto> getCommentsByUserId(@PathVariable Long userId) {
-        return commentService.getCommentsByUserId (userId);
+    public PaginatedResponseDto<CommentResponseDto> getCommentsByUserId(@PathVariable Long userId , Pageable pageable) {
+        return commentService.getCommentsByUserId (userId , pageable);
     }
 }
