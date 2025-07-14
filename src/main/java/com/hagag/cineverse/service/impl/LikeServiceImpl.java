@@ -1,6 +1,7 @@
 package com.hagag.cineverse.service.impl;
 
 import com.hagag.cineverse.dto.like.LikeResponseDto;
+import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.dto.projection.TopLikedMoviesDto;
 import com.hagag.cineverse.entity.Like;
 import com.hagag.cineverse.entity.Movie;
@@ -15,11 +16,10 @@ import com.hagag.cineverse.service.LikeService;
 import com.hagag.cineverse.util.SecurityUtil;
 import com.hagag.cineverse.validation.AccessGuard;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,19 +61,35 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public List<LikeResponseDto> getAllLikesByUser(Long userId) {
+    public PaginatedResponseDto<LikeResponseDto> getAllLikesByUser(Long userId , Pageable pageable) {
         User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with id: " + userId + " not found"));
 
-        List<Like> allLikes = likeRepo.findAllByUser(user);
+        Page<Like> page = likeRepo.findAllByUser(user , pageable);
 
-        return allLikes.stream().map(likeMapper::toDto).collect(Collectors.toList());
+        return PaginatedResponseDto.<LikeResponseDto>builder()
+                .items(page.map(likeMapper::toDto).getContent())
+                .currentPage(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .totalItems(page.getTotalElements())
+                .pageSize(page.getSize())
+                .isLastPage(page.isLast())
+                .build();
     }
 
     @Override
-    public List<LikeResponseDto> getCurrentUserLikes() {
+    public PaginatedResponseDto<LikeResponseDto> getCurrentUserLikes(Pageable pageable) {
         User user = securityUtil.getCurrentUser();
-        List<Like> allLikes = likeRepo.findAllByUser(user);
-        return allLikes.stream().map(likeMapper::toDto).collect(Collectors.toList());
+
+        Page<Like> page = likeRepo.findAllByUser(user , pageable);
+
+        return PaginatedResponseDto.<LikeResponseDto>builder()
+                .items(page.map(likeMapper::toDto).getContent())
+                .currentPage(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .totalItems(page.getTotalElements())
+                .pageSize(page.getSize())
+                .isLastPage(page.isLast())
+                .build();
     }
 
     @Override
@@ -84,10 +100,18 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public List<TopLikedMoviesDto> getMostLikedMovies(int limit) {
+    public PaginatedResponseDto<TopLikedMoviesDto> getMostLikedMovies(Pageable pageable) {
 
-        return likeRepo.findTopLikedMovies(PageRequest.of(0 , limit));
+        Page<TopLikedMoviesDto> page = likeRepo.findTopLikedMovies(pageable);
 
+        return PaginatedResponseDto.<TopLikedMoviesDto>builder()
+                .items(page.getContent())
+                .currentPage(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .totalItems(page.getTotalElements())
+                .pageSize(page.getSize())
+                .isLastPage(page.isLast())
+                .build();
     }
 
 }

@@ -5,8 +5,6 @@ import com.hagag.cineverse.dto.projection.TopWatchlistedMoviesDto;
 import com.hagag.cineverse.dto.watchlist.WatchlistResponseDto;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 
 public interface WatchlistService {
 
@@ -20,5 +18,5 @@ public interface WatchlistService {
 
     int getMyWatchlistCount();
 
-    List<TopWatchlistedMoviesDto> getTopWatchlistedMovies(int limit);
+    PaginatedResponseDto<TopWatchlistedMoviesDto> getTopWatchlistedMovies(Pageable pageable);
 }

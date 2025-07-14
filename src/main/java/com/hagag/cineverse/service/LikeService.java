@@ -1,9 +1,10 @@
 package com.hagag.cineverse.service;
 
 import com.hagag.cineverse.dto.like.LikeResponseDto;
+import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.dto.projection.TopLikedMoviesDto;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface LikeService {
 
@@ -11,11 +12,11 @@ public interface LikeService {
 
     void unlikeMovie(Long movieId);
 
-    List<LikeResponseDto> getAllLikesByUser(Long userId);
+    PaginatedResponseDto<LikeResponseDto> getAllLikesByUser(Long userId , Pageable pageable);
 
     Long getLikesCountForMovie(Long movieId);
 
-    List<TopLikedMoviesDto> getMostLikedMovies(int limit);
+    PaginatedResponseDto<TopLikedMoviesDto> getMostLikedMovies(Pageable pageable);
 
-    List<LikeResponseDto> getCurrentUserLikes();
+    PaginatedResponseDto<LikeResponseDto> getCurrentUserLikes(Pageable pageable);
 }

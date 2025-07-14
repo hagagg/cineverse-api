@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface WatchListRepo extends JpaRepository<Watchlist, Long> {
@@ -29,5 +28,5 @@ public interface WatchListRepo extends JpaRepository<Watchlist, Long> {
 
     @Query ("SELECT l.movie.id AS id , l.movie.title AS title, COUNT (l) AS watchlistCount " +
              "FROM Watchlist l GROUP BY l.movie.id , l.movie.title ORDER BY COUNT (l) DESC")
-    List<TopWatchlistedMoviesDto> findTopWatchlistedMovies(Pageable pageable);
+    Page<TopWatchlistedMoviesDto> findTopWatchlistedMovies(Pageable pageable);
 }

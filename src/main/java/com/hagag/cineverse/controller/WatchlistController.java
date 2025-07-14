@@ -6,11 +6,7 @@ import com.hagag.cineverse.dto.watchlist.WatchlistResponseDto;
 import com.hagag.cineverse.service.WatchlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -26,7 +22,7 @@ public class WatchlistController {
     }
 
     @GetMapping
-    public PaginatedResponseDto<WatchlistResponseDto> getMyWatchlist (@PageableDefault (size = 10 , sort = "addedAt" , direction = Sort.Direction.DESC) Pageable pageable) {
+    public PaginatedResponseDto<WatchlistResponseDto> getMyWatchlist (Pageable pageable) {
         return watchlistService.getMyWatchlist (pageable);
     }
 
@@ -46,8 +42,8 @@ public class WatchlistController {
     }
 
     @GetMapping("/top")
-    public List<TopWatchlistedMoviesDto> getTopWatchlistedMovies (@RequestParam (defaultValue = "10") int limit) {
-        return watchlistService.getTopWatchlistedMovies (limit);
+    public PaginatedResponseDto<TopWatchlistedMoviesDto> getTopWatchlistedMovies (Pageable pageable) {
+        return watchlistService.getTopWatchlistedMovies (pageable);
     }
 
 }

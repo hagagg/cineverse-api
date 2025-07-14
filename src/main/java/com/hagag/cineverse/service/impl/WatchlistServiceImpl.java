@@ -15,7 +15,6 @@ import com.hagag.cineverse.service.WatchlistService;
 import com.hagag.cineverse.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -103,9 +102,18 @@ public class WatchlistServiceImpl implements WatchlistService {
     }
 
     @Override
-    public List<TopWatchlistedMoviesDto> getTopWatchlistedMovies(int limit) {
+    public PaginatedResponseDto<TopWatchlistedMoviesDto> getTopWatchlistedMovies(Pageable pageable) {
 
-        return watchListRepo.findTopWatchlistedMovies (PageRequest.of (0 , limit));
+        Page<TopWatchlistedMoviesDto> page = watchListRepo.findTopWatchlistedMovies(pageable);
+
+        return PaginatedResponseDto.<TopWatchlistedMoviesDto>builder()
+                .items(page.getContent())
+                .currentPage(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .totalItems(page.getTotalElements())
+                .pageSize(page.getSize())
+                .isLastPage(page.isLast())
+                .build();
     }
 
 
