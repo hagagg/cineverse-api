@@ -81,7 +81,7 @@ erDiagram
 
 1. **Setup**
 ```bash
-git clone https://github.com/yourusername/cineverse.git
+git clone https://github.com/hagagg/cineverse.git
 cd cineverse
 ```
 
