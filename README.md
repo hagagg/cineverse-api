@@ -97,8 +97,7 @@ spring.datasource.password=your_password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA Configuration
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=none
 
 # TMDb API Configuration
 tmdb.api-key=your_tmdb_api_key
