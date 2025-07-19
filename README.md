@@ -25,56 +25,69 @@ A comprehensive RESTful Movie API built with Spring Boot, featuring secure JWT a
 
 ```mermaid
 erDiagram
-    USER {
+   USERS {
         bigint id PK
-        string username
-        string email
-        string password
-        string firstName
-        string lastName
-        string role
-        datetime createdAt
-        datetime updatedAt
+        varchar username UK "UNIQUE, NOT NULL, 50 chars"
+        varchar email UK "UNIQUE, NOT NULL, 100 chars"
+        varchar password "NOT NULL, 255 chars"
+        varchar first_name "NOT NULL, 50 chars"
+        varchar last_name "NOT NULL, 50 chars"
+        varchar role "50 chars, DEFAULT 'USER'"
+        timestamp created_at "DEFAULT CURRENT_TIMESTAMP"
+        timestamp updated_at "DEFAULT CURRENT_TIMESTAMP ON UPDATE"
     }
     
-    MOVIE {
+    MOVIES {
         bigint id PK
-        string title
-        string posterUrl
-        date releaseDate
-        text overview
-        bigint tmdbId
+        varchar title "NOT NULL, 255 chars"
+        varchar poster_url "500 chars, DEFAULT NULL"
+        date release_date "NOT NULL"
+        text overview "NOT NULL"
+        bigint tmdb_id UK "UNIQUE, NOT NULL"
     }
     
-    COMMENT {
+    COMMENTS {
         bigint id PK
-        text content
-        datetime createdAt
-        datetime updatedAt
-        bigint userId FK
-        bigint movieId FK
+        bigint user_id FK "NOT NULL"
+        bigint movie_id FK "NOT NULL"
+        text content "NOT NULL"
+        timestamp created_at "DEFAULT CURRENT_TIMESTAMP"
+        timestamp updated_at "DEFAULT CURRENT_TIMESTAMP ON UPDATE"
     }
     
-    LIKE {
+    LIKES {
         bigint id PK
-        datetime likedAt
-        bigint userId FK
-        bigint movieId FK
+        bigint user_id FK "NOT NULL"
+        bigint movie_id FK "NOT NULL"
+        timestamp liked_at "DEFAULT CURRENT_TIMESTAMP"
     }
     
-    WATCHLIST {
+    WATCHLISTS {
         bigint id PK
-        datetime addedAt
-        bigint userId FK
-        bigint movieId FK
+        bigint user_id FK "UNIQUE, NOT NULL"
     }
     
-    USER ||--o{ COMMENT : writes
-    USER ||--o{ LIKE : has
-    USER ||--o{ WATCHLIST : manages
-    MOVIE ||--o{ COMMENT : has
-    MOVIE ||--o{ LIKE : receives
-    MOVIE ||--o{ WATCHLIST : added_to
+    WATCHLIST_ITEMS {
+        bigint id PK
+        bigint watchlist_id FK "NOT NULL"
+        bigint movie_id FK "NOT NULL"
+        timestamp added_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+    
+    %% Relationships
+    USERS ||--o{ COMMENTS : "writes (CASCADE DELETE)"
+    USERS ||--o{ LIKES : "gives (CASCADE DELETE)"
+    USERS ||--|| WATCHLISTS : "owns (CASCADE DELETE)"
+    
+    MOVIES ||--o{ COMMENTS : "receives (CASCADE DELETE)"
+    MOVIES ||--o{ LIKES : "receives (CASCADE DELETE)"
+    MOVIES ||--o{ WATCHLIST_ITEMS : "added to (CASCADE DELETE)"
+    
+    WATCHLISTS ||--o{ WATCHLIST_ITEMS : "contains (CASCADE DELETE)"
+    
+    %% Unique Constraints
+    LIKES ||--|| "user_id,movie_id" : "UNIQUE CONSTRAINT"
+    WATCHLIST_ITEMS ||--|| "watchlist_id,movie_id" : "UNIQUE CONSTRAINT"
 ```
 
 ## Quick Start
