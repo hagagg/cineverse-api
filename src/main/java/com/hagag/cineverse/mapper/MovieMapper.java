@@ -24,5 +24,4 @@ public interface MovieMapper {
     @Mapping(target = "releaseDate", source = "tmdbMovieDto.releaseDate", qualifiedByName = "parseDate")
     @Mapping(target = "posterUrl", source = "tmdbMovieDto.posterPath", qualifiedByName = "buildPosterUrl")
     Movie toEntity(TmdbMovieDto tmdbMovieDto);
-
 }

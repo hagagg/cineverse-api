@@ -4,11 +4,13 @@ import com.hagag.cineverse.dto.authentication.AuthResponseDto;
 import com.hagag.cineverse.dto.authentication.LoginRequestDto;
 import com.hagag.cineverse.dto.authentication.RegisterRequestDto;
 import com.hagag.cineverse.entity.User;
+import com.hagag.cineverse.entity.Watchlist;
 import com.hagag.cineverse.enums.Role;
 import com.hagag.cineverse.exception.custom.UserAlreadyExistsException;
 import com.hagag.cineverse.exception.custom.UserNotFoundException;
 import com.hagag.cineverse.mapper.AuthMapper;
 import com.hagag.cineverse.repository.UserRepo;
+import com.hagag.cineverse.repository.WatchListRepo;
 import com.hagag.cineverse.security.JwtService;
 import com.hagag.cineverse.security.UserPrincipal;
 import com.hagag.cineverse.service.AuthService;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepo userRepo;
+    private final WatchListRepo watchListRepo;
     private final AuthMapper authMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtService jwtService;
@@ -51,8 +54,13 @@ public class AuthServiceImpl implements AuthService {
         if (user.getRole() == null) {
             user.setRole(Role.USER);
         }
-
         userRepo.save(user);
+
+        Watchlist watchlist = Watchlist.builder()
+                .user(user)
+                .build();
+        watchListRepo.save(watchlist);
+
         String token = jwtService.generateToken(new UserPrincipal(user));
 
         return new AuthResponseDto(token);

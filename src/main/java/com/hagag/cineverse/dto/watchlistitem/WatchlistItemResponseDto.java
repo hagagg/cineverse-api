@@ -1,12 +1,12 @@
-package com.hagag.cineverse.dto.watchlist;
+package com.hagag.cineverse.dto.watchlistitem;
 
 import lombok.Data;
 
 @Data
-public class WatchlistResponseDto {
+public class WatchlistItemResponseDto {
 
     private Long id;
     private Long movieId;
     private String movieTitle;
-    private Long userId;
+
 }

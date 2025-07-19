@@ -2,16 +2,18 @@ package com.hagag.cineverse.service.impl;
 
 import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.dto.projection.TopWatchlistedMoviesDto;
-import com.hagag.cineverse.dto.watchlist.WatchlistResponseDto;
+import com.hagag.cineverse.dto.watchlistitem.WatchlistItemResponseDto;
 import com.hagag.cineverse.entity.Movie;
 import com.hagag.cineverse.entity.User;
 import com.hagag.cineverse.entity.Watchlist;
+import com.hagag.cineverse.entity.WatchlistItem;
 import com.hagag.cineverse.exception.custom.AlreadyExistsException;
 import com.hagag.cineverse.exception.custom.ResourceNotFoundException;
 import com.hagag.cineverse.mapper.PaginationMapper;
-import com.hagag.cineverse.mapper.WatchlistMapper;
+import com.hagag.cineverse.mapper.WatchlistItemMapper;
 import com.hagag.cineverse.repository.MovieRepo;
 import com.hagag.cineverse.repository.WatchListRepo;
+import com.hagag.cineverse.repository.WatchlistItemRepo;
 import com.hagag.cineverse.service.WatchlistService;
 import com.hagag.cineverse.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -25,39 +27,44 @@ import org.springframework.stereotype.Service;
 public class WatchlistServiceImpl implements WatchlistService {
 
     private final WatchListRepo watchListRepo;
+    private final WatchlistItemRepo watchlistItemRepo;
     private final MovieRepo movieRepo;
-    private final WatchlistMapper watchlistMapper;
+    private final WatchlistItemMapper watchlistItemMapper;
     private final PaginationMapper paginationMapper;
     private final SecurityUtil securityUtil;
 
     @Override
-    public WatchlistResponseDto addToWatchlist(Long movieId) {
+    public WatchlistItemResponseDto addToWatchlist(Long movieId) {
         User user = securityUtil.getCurrentUser();
         Movie movie = movieRepo.findById(movieId).orElseThrow(()-> new ResourceNotFoundException("Movie with id: " + movieId +" Not Found"));
 
-        boolean exists = watchListRepo.existsByMovieAndUser(movie , user);
+        Watchlist watchlist = watchListRepo.findByUser(user);
+
+        boolean exists = watchlistItemRepo.existsByMovieAndWatchlist(movie , watchlist);
 
         if (exists) {
             throw new AlreadyExistsException("Movie with id: " + movieId +" Already Exists in the Watchlist");
         }
 
-        Watchlist watchlist = Watchlist.builder()
+        WatchlistItem watchlistItem = WatchlistItem.builder()
                 .movie(movie)
-                .user(user)
+                .watchlist(watchlist)
                 .build();
 
-        watchListRepo.save(watchlist);
+        watchlistItemRepo.save(watchlistItem);
 
-        return watchlistMapper.toDto(watchlist);
+        return watchlistItemMapper.toDto(watchlistItem);
     }
 
     @Override
-    public PaginatedResponseDto<WatchlistResponseDto> getMyWatchlist(Pageable pageable) {
+    public PaginatedResponseDto<WatchlistItemResponseDto> getMyWatchlist(Pageable pageable) {
         User user = securityUtil.getCurrentUser();
 
-        Page<Watchlist> watchlistPage = watchListRepo.findAllByUserOrderByAddedAtDesc (user , pageable);
+        Watchlist watchlist = watchListRepo.findByUser(user);
 
-        Page<WatchlistResponseDto> dtoPage = watchlistPage.map(watchlistMapper::toDto);
+        Page<WatchlistItem> itemsPage = watchlistItemRepo.findAllByWatchlistOrderByAddedAtDesc (watchlist , pageable);
+
+        Page<WatchlistItemResponseDto> dtoPage = itemsPage.map(watchlistItemMapper::toDto);
 
         return paginationMapper.toPaginatedResponse(dtoPage);
     }
@@ -66,37 +73,44 @@ public class WatchlistServiceImpl implements WatchlistService {
     public void clearMyWatchlist() {
         User user = securityUtil.getCurrentUser();
 
-        boolean exists = watchListRepo.existsByUser (user);
+        Watchlist watchlist = watchListRepo.findByUser(user);
 
-        if (!exists) {
+        boolean hasItems = watchlistItemRepo.existsByWatchlist (watchlist);
+
+        if (!hasItems) {
             throw new ResourceNotFoundException("Your watchlist is already empty");
         }
 
-        watchListRepo.deleteAllByUser(user);
+        watchlistItemRepo.deleteAllByWatchlist(watchlist);
     }
 
     @Override
     public void deleteMovieFromWatchlist(Long movieId) {
         User user = securityUtil.getCurrentUser();
-        Movie movie = movieRepo.findById(movieId).orElseThrow(()-> new ResourceNotFoundException("Movie with id: " + movieId +" Not Found"));
+        Movie movie = movieRepo.findById(movieId)
+                .orElseThrow(()-> new ResourceNotFoundException("Movie with id: " + movieId +" Not Found"));
 
-        Watchlist watchlist = watchListRepo.findByMovieAndUser (movie , user)
-                .orElseThrow(()-> new ResourceNotFoundException("Movie with id: " + movieId +" is not in Your Watchlist"));
+        Watchlist watchlist = watchListRepo.findByUser (user);
 
-        watchListRepo.delete(watchlist);
+        WatchlistItem item = watchlistItemRepo.findByMovieAndWatchlist(movie , watchlist)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with id: " + movieId +" Not Found in your watchlist"));
+
+        watchlistItemRepo.delete(item);
     }
 
     @Override
     public int getMyWatchlistCount() {
         User user = securityUtil.getCurrentUser();
 
-        return watchListRepo.countByUser (user);
+        Watchlist watchlist = watchListRepo.findByUser(user);
+
+        return watchlistItemRepo.countByWatchlist(watchlist);
     }
 
     @Override
     public PaginatedResponseDto<TopWatchlistedMoviesDto> getTopWatchlistedMovies(Pageable pageable) {
 
-        Page<TopWatchlistedMoviesDto> page = watchListRepo.findTopWatchlistedMovies(pageable);
+        Page<TopWatchlistedMoviesDto> page = watchlistItemRepo.findTopWatchlistedMovies(pageable);
 
         return paginationMapper.toPaginatedResponse(page);
     }

@@ -2,7 +2,7 @@ package com.hagag.cineverse.controller;
 
 import com.hagag.cineverse.dto.pagination.PaginatedResponseDto;
 import com.hagag.cineverse.dto.projection.TopWatchlistedMoviesDto;
-import com.hagag.cineverse.dto.watchlist.WatchlistResponseDto;
+import com.hagag.cineverse.dto.watchlistitem.WatchlistItemResponseDto;
 import com.hagag.cineverse.service.WatchlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +17,12 @@ public class WatchlistController {
     private final WatchlistService watchlistService;
 
     @PostMapping("/{movieId}")
-    public WatchlistResponseDto addToWatchlist (@PathVariable Long movieId) {
+    public WatchlistItemResponseDto addToWatchlist (@PathVariable Long movieId) {
         return watchlistService.addToWatchlist (movieId);
     }
 
     @GetMapping
-    public PaginatedResponseDto<WatchlistResponseDto> getMyWatchlist (Pageable pageable) {
+    public PaginatedResponseDto<WatchlistItemResponseDto> getMyWatchlist (Pageable pageable) {
         return watchlistService.getMyWatchlist (pageable);
     }
 
