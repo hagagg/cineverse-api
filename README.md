@@ -122,11 +122,6 @@ tmdb.base-url=https://api.themoviedb.org/3
 mvn spring-boot:run
 ```
 
-## 🚀 Future Plans
-
-- **Additional Features:** Movie recommendations, user reviews, advanced search filters,etc.
-- **Microservices Architecture:** Planning to decompose into microservices for better scalability
-
 ## 🤝 Contributing
 
 1. Fork the repository
